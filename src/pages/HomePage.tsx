@@ -1,18 +1,9 @@
-import { FC } from 'react';
-import DataTable from '../shared/ui/DataTable';
-import { TableColumn, TableRowData } from '../types';
+import { Link } from 'react-router-dom';
 
-interface HomePageProps {
-  columns: TableColumn[];
-  rows: TableRowData[];
-  onDelete: (id: number) => void;
-}
-
-const HomePage: FC<HomePageProps> = ({ columns, rows, onDelete }) => {
+const HomePage = () => {
   return (
     <div>
-      <h1>Home Page</h1>
-      <DataTable columns={columns} rows={rows} onDelete={onDelete} />
+      <Link to={'/products'}>Display all products</Link>
     </div>
   );
 };
