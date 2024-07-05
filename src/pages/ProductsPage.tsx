@@ -1,4 +1,4 @@
-import { Button, Pagination } from '@mui/material';
+import { Box, Button, Pagination, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { createProduct, fetchProducts } from '../api/products';
 import DataTable from '../shared/ui/DataTable';
@@ -17,12 +17,15 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<TableRowData[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
       const data = await fetchProducts(page + 1, 5);
-      setProducts(data.products);
-      setTotalPages(data.totalPages);
+      if (data) {
+        setProducts(data.products);
+        setTotalPages(data.totalPages);
+      }
     };
     getProducts();
   }, [page]);
@@ -47,21 +50,34 @@ const ProductsPage = () => {
     setPage(newPage - 1);
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
+
+  const filteredProducts = products.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+
   return (
     <div>
-      <h1 className='mb-5'>Products</h1>
-      <div className='my-10'>
+      <h1>Products</h1>
+      <div className='my-5'>
         <Button variant='outlined' onClick={handleAddProduct}>
           Add Product
         </Button>
       </div>
-      <DataTable columns={columns} rows={products} onDelete={handleDelete} />
-      <Pagination
-        className='flex justify-center mt-10'
-        count={totalPages}
-        page={page + 1}
-        onChange={handlePageChange}
-      />
+      <Box mb={3}>
+        <TextField label='Search Products' variant='outlined' fullWidth value={search} onChange={handleSearchChange} />
+      </Box>
+      {products && (
+        <div>
+          <DataTable columns={columns} rows={filteredProducts} onDelete={handleDelete} />
+          <Pagination
+            className='flex justify-center mt-10'
+            count={totalPages}
+            page={page + 1}
+            onChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };
