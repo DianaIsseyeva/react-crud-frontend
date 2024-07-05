@@ -67,17 +67,19 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
                     </TableCell>
                   ))}
                   <TableCell align='center'>
-                    <Button onClick={() => handleEdit(row.id)} variant='contained' color='primary'>
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => handleDelete(row.id)}
-                      variant='contained'
-                      color='secondary'
-                      style={{ marginLeft: 8 }}
-                    >
-                      Delete
-                    </Button>
+                    <div className='flex flex-wrap justify-center items-center gap-5'>
+                      <Button onClick={() => handleEdit(row.id)} variant='contained' color='primary'>
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(row.id)}
+                        variant='contained'
+                        color='secondary'
+                        style={{ marginLeft: 8 }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
