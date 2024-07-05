@@ -8,6 +8,7 @@ export interface TableRowData {
   id: number;
   title: string;
   description: string;
+  status: string;
   image: string;
   price: number;
 }
