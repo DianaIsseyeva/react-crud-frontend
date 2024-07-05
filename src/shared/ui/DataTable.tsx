@@ -5,25 +5,13 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TableProps } from '../../types';
 
 const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
   const navigate = useNavigate();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const handleEdit = (id: number) => {
     navigate(`/edit/${id}`);
@@ -51,7 +39,7 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
           </TableHead>
           <TableBody>
             {rows &&
-              rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+              rows.map(row => (
                 <TableRow key={row.id} sx={{ 'height': '100px', '&:last-child td, &:last-child th': { border: 0 } }}>
                   {columns.map(column => (
                     <TableCell
@@ -67,16 +55,12 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
                             textOverflow: 'ellipsis',
                             display: '-webkit-box',
                             WebkitBoxOrient: 'vertical',
-                            WebkitLineClamp: 3, // Limits the description to 3 lines
-                            height: '100%', // Ensures the height fits within the fixed row height
+                            WebkitLineClamp: 3,
+                            height: '100%',
                           }}
                         />
                       ) : column.id === 'image' ? (
-                        <img
-                          src={row[column.id]}
-                          alt={row['title']}
-                          style={{ maxHeight: '80px', width: 'auto' }} // Adjust image size to fit within the row
-                        />
+                        <img src={row[column.id]} alt={row['title']} style={{ maxHeight: '80px', width: 'auto' }} />
                       ) : (
                         row[column.id]
                       )}
@@ -100,16 +84,6 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        className='hidden'
-        rowsPerPageOptions={[5, 10, 25]}
-        component='div'
-        count={rows ? rows.length : 0}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 };
