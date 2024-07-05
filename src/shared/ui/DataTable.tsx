@@ -24,50 +24,67 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-        <TableHead>
-          <TableRow>
-            {columns.map(column => (
-              <TableCell key={column.id} align={column.align || 'left'}>
-                {column.label}
-              </TableCell>
-            ))}
-            <TableCell align='center'>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <Paper>
+      <TableContainer>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
               {columns.map(column => (
                 <TableCell key={column.id} align={column.align || 'left'}>
-                  {column.id === 'description' ? (
-                    <div dangerouslySetInnerHTML={{ __html: row[column.id] }} />
-                  ) : column.id === 'image' ? (
-                    <img src={row[column.id]} alt={row['title']} width='100' />
-                  ) : (
-                    row[column.id]
-                  )}
+                  {column.label}
                 </TableCell>
               ))}
-              <TableCell align='center'>
-                <Button onClick={() => handleEdit(row.id)} variant='contained' color='primary'>
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => handleDelete(row.id)}
-                  variant='contained'
-                  color='secondary'
-                  style={{ marginLeft: 8 }}
-                >
-                  Delete
-                </Button>
-              </TableCell>
+              <TableCell align='center'>Actions</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows &&
+              rows.map(row => (
+                <TableRow key={row.id} sx={{ 'height': '100px', '&:last-child td, &:last-child th': { border: 0 } }}>
+                  {columns.map(column => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align || 'left'}
+                      sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    >
+                      {column.id === 'description' ? (
+                        <div
+                          dangerouslySetInnerHTML={{ __html: row[column.id] }}
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 3,
+                            height: '100%',
+                          }}
+                        />
+                      ) : column.id === 'image' ? (
+                        <img src={row[column.id]} alt={row['title']} style={{ maxHeight: '80px', width: 'auto' }} />
+                      ) : (
+                        row[column.id]
+                      )}
+                    </TableCell>
+                  ))}
+                  <TableCell align='center'>
+                    <Button onClick={() => handleEdit(row.id)} variant='contained' color='primary'>
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(row.id)}
+                      variant='contained'
+                      color='secondary'
+                      style={{ marginLeft: 8 }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 
