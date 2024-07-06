@@ -1,5 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
+import CreateProductPage from './pages/CreateProductPage';
+import EditProductPage from './pages/EditProductPage';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
 
@@ -9,8 +11,8 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/products' element={<ProductsPage />} />
-        {/* <Route path="/create" element={<CreateProductPage />} />
-        <Route path="/edit/:id" element={<EditProductPage />} /> */}
+        <Route path='/products/create' element={<CreateProductPage />} />
+        <Route path='/edit/:id' element={<EditProductPage />} />
       </Routes>
     </Router>
   );

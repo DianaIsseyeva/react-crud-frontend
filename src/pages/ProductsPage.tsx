@@ -1,6 +1,7 @@
 import { Box, Button, Pagination, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { createProduct, fetchProducts } from '../api/products';
+import { useNavigate } from 'react-router-dom';
+import { deleteProduct, fetchProducts } from '../api/products';
 import DataTable from '../shared/ui/DataTable';
 import { TableColumn, TableRowData } from '../types';
 
@@ -18,6 +19,7 @@ const ProductsPage = () => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getProducts = async () => {
@@ -30,20 +32,13 @@ const ProductsPage = () => {
     getProducts();
   }, [page]);
 
-  const handleAddProduct = async () => {
-    const newProduct: Omit<TableRowData, 'id'> = {
-      title: 'New Product',
-      description: 'This is a new product',
-      status: 'active',
-      image: '/path/to/image.png',
-      price: 9.99,
-    };
-    const createdProduct = await createProduct(newProduct);
-    setProducts([...products, createdProduct]);
+  const handleAddProduct = () => {
+    navigate('/products/create');
   };
 
-  const handleDelete = (id: number) => {
-    console.log(id);
+  const handleDelete = async (id: number) => {
+    await deleteProduct(id);
+    setProducts(products.filter(product => product.id !== id));
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
@@ -54,7 +49,7 @@ const ProductsPage = () => {
     setSearch(event.target.value);
   };
 
-  const filteredProducts = products.filter(product => product.title.toLowerCase().includes(search.toLowerCase()));
+  const filteredProducts = products.filter(product => product.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div>
