@@ -55,7 +55,7 @@ const ProductsPage = () => {
     }
   };
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
+  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
     navigate(`/products?page=${newPage}&limit=5`, { replace: true });
   };
 
