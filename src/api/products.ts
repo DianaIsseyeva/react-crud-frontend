@@ -14,10 +14,42 @@ export const fetchProducts = async (
   totalPages: number;
 }> => {
   const response = await axios.get(API_URL, { params: { page, limit } });
-  return response.data;
+  if (response.status === 200) {
+    return response.data;
+  } else {
+    throw new Error('Failed to fetch products');
+  }
 };
 
-export const createProduct = async (product: Omit<TableRowData, 'id'>): Promise<TableRowData> => {
-  const response = await axios.post(API_URL, product);
-  return response.data;
+export const createProduct = async (formData: FormData): Promise<TableRowData> => {
+  const response = await axios.post(API_URL, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  if (response.status === 201) {
+    return response.data;
+  } else {
+    throw new Error('Failed to create product');
+  }
+};
+
+export const deleteProduct = async (id: number): Promise<void> => {
+  const response = await axios.delete(`${API_URL}/${id}`);
+  if (response.status !== 204) {
+    throw new Error('Failed to delete product');
+  }
+};
+
+export const updateProduct = async (formData: FormData, id: number): Promise<TableRowData> => {
+  const response = await axios.put(`${API_URL}/${id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  if (response.status === 200) {
+    return response.data;
+  } else {
+    throw new Error('Failed to update product');
+  }
 };

@@ -14,7 +14,7 @@ const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
-    navigate(`/edit/${id}`);
+    navigate(`/products/edit/${id}`);
   };
 
   const handleDelete = (id: number) => {
