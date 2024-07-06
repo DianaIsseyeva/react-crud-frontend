@@ -24,19 +24,20 @@ const ProductsPage = () => {
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '5', 10);
 
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const data = await fetchProducts(page, limit, searchTitle);
-        if (data) {
-          setProducts(data.products);
-          setTotalPages(data.totalPages);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
+  const getProducts = async (page: number, limit: number, searchTitle: string) => {
+    try {
+      const data = await fetchProducts(page, limit, searchTitle);
+      if (data) {
+        setProducts(data.products);
+        setTotalPages(data.totalPages);
       }
-    };
-    getProducts();
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    getProducts(page, limit, searchTitle);
   }, [page, limit, searchTitle]);
 
   const handleAddProduct = () => {
@@ -45,7 +46,13 @@ const ProductsPage = () => {
 
   const handleDelete = async (id: number) => {
     await deleteProduct(id);
-    setProducts(products.filter(product => product.id !== id));
+    const newProducts = await fetchProducts(page, limit, searchTitle);
+    if (newProducts.products.length === 0 && page > 1) {
+      navigate(`/products?page=${page - 1}&limit=${limit}`, { replace: true });
+    } else {
+      setProducts(newProducts.products);
+      setTotalPages(newProducts.totalPages);
+    }
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {

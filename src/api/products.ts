@@ -61,3 +61,17 @@ export const updateProduct = async (formData: FormData, id: number): Promise<Tab
     throw new Error('Failed to update product');
   }
 };
+
+export const fetchProductById = async (id: number): Promise<TableRowData> => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch product');
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch product');
+  }
+};
