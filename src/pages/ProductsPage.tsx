@@ -18,19 +18,22 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<TableRowData[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
   const navigate = useNavigate();
+
+  const [searchTitle, setSearchTitle] = useState('');
 
   useEffect(() => {
     const getProducts = async () => {
-      const data = await fetchProducts(page + 1, 5);
-      if (data) {
+      try {
+        const data = await fetchProducts(page + 1, 5, searchTitle);
         setProducts(data.products);
         setTotalPages(data.totalPages);
+      } catch (error) {
+        console.error('Error fetching products:', error);
       }
     };
     getProducts();
-  }, [page]);
+  }, [page, searchTitle]);
 
   const handleAddProduct = () => {
     navigate('/products/create');
@@ -45,11 +48,9 @@ const ProductsPage = () => {
     setPage(newPage - 1);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTitle(e.target.value);
   };
-
-  const filteredProducts = products.filter(product => product.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div>
@@ -60,11 +61,17 @@ const ProductsPage = () => {
         </Button>
       </div>
       <Box mb={3}>
-        <TextField label='Search Products' variant='outlined' fullWidth value={search} onChange={handleSearchChange} />
+        <TextField
+          label='Search Products'
+          variant='outlined'
+          fullWidth
+          value={searchTitle}
+          onChange={handleSearchChange}
+        />
       </Box>
       {products && (
         <div>
-          <DataTable columns={columns} rows={filteredProducts} onDelete={handleDelete} />
+          <DataTable columns={columns} rows={products} onDelete={handleDelete} />
           <Pagination
             className='flex justify-center mt-10'
             count={totalPages}
