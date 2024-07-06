@@ -28,7 +28,7 @@ interface ProductFormInputs extends Omit<TableRowData, 'id'> {
   images: File[];
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) => {
+const CreateProduct: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) => {
   const {
     control,
     handleSubmit,
@@ -208,4 +208,4 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
   );
 };
 
-export default ProductForm;
+export default CreateProduct;

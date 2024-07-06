@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TableProps } from '../../types';
+import { TableProps } from '../types';
 
 const DataTable: FC<TableProps> = ({ columns, rows, onDelete }) => {
   const navigate = useNavigate();

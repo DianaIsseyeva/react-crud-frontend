@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createProduct } from '../api/products';
-import ProductForm from '../components/ProductForm';
 import { toast } from 'react-toastify';
+import { createProduct } from '../api/products';
+import CreateProduct from '../containers/CreateProduct';
 
 const CreateProductPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const CreateProductPage: React.FC = () => {
   return (
     <div>
       <h1>Create Product</h1>
-      <ProductForm onSubmit={handleCreateProduct} />
+      <CreateProduct onSubmit={handleCreateProduct} />
     </div>
   );
 };

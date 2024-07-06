@@ -2,7 +2,7 @@ import { Box, Button, Pagination, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteProduct, fetchProducts } from '../api/products';
-import DataTable from '../shared/ui/DataTable';
+import DataTable from '../components/DataTable';
 import { TableColumn, TableRowData } from '../types';
 
 const columns: TableColumn[] = [
