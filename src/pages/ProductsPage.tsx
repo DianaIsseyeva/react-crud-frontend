@@ -1,8 +1,7 @@
 import { Box, Button, Pagination, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { deleteProduct, fetchProducts } from '../api/products';
-import DataTable from '../components/DataTable';
 import { TableColumn, TableRowData } from '../types';
 
 const columns: TableColumn[] = [
@@ -13,6 +12,8 @@ const columns: TableColumn[] = [
   { id: 'image', label: 'Image' },
   { id: 'price', label: 'Price', align: 'right' },
 ];
+
+const DataTable = lazy(() => import('../components/DataTable'));
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<TableRowData[]>([]);

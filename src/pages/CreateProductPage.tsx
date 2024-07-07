@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createProduct } from '../api/products';
-import CreateProduct from '../containers/CreateProduct';
+
+const CreateProduct = React.lazy(() => import('../containers/CreateProduct'));
 
 const CreateProductPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +21,9 @@ const CreateProductPage: React.FC = () => {
   return (
     <div>
       <h1>Create Product</h1>
-      <CreateProduct onSubmit={handleCreateProduct} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <CreateProduct onSubmit={handleCreateProduct} />
+      </Suspense>
     </div>
   );
 };
