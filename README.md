@@ -76,7 +76,7 @@ npm run build
 
 - Перейдите в папку фронтенда:
   ```bash
-  cd react-crud
+  cd react-crud-frontend
   ```
 - Постройте Docker образ для фронтенда:
   ```bash
