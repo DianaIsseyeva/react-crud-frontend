@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { TableRowData } from '../types';
 
-const API_URL = 'http://localhost:8000/products';
+const API_URL = 'http://localhost:8000/api/products';
 
 export const fetchProducts = async (
   page: number = 1,
