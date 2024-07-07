@@ -5,7 +5,8 @@ const API_URL = 'http://localhost:8000/products';
 
 export const fetchProducts = async (
   page: number = 1,
-  limit: number = 5
+  limit: number = 5,
+  title?: string
 ): Promise<{
   products: TableRowData[];
   page: number;
@@ -13,7 +14,14 @@ export const fetchProducts = async (
   total: number;
   totalPages: number;
 }> => {
-  const response = await axios.get(API_URL, { params: { page, limit } });
+  const params: { [key: string]: number | string } = { page, limit };
+
+  if (title) {
+    params.title = title;
+  }
+
+  const response = await axios.get(API_URL, { params });
+
   if (response.status === 200) {
     return response.data;
   } else {
@@ -51,5 +59,19 @@ export const updateProduct = async (formData: FormData, id: number): Promise<Tab
     return response.data;
   } else {
     throw new Error('Failed to update product');
+  }
+};
+
+export const fetchProductById = async (id: number): Promise<TableRowData> => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch product');
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch product');
   }
 };

@@ -1,8 +1,7 @@
 import { Box, Button, Pagination, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, lazy } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { deleteProduct, fetchProducts } from '../api/products';
-import DataTable from '../shared/ui/DataTable';
 import { TableColumn, TableRowData } from '../types';
 
 const columns: TableColumn[] = [
@@ -14,23 +13,33 @@ const columns: TableColumn[] = [
   { id: 'price', label: 'Price', align: 'right' },
 ];
 
+const DataTable = lazy(() => import('../components/DataTable'));
+
 const ProductsPage = () => {
   const [products, setProducts] = useState<TableRowData[]>([]);
-  const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getProducts = async () => {
-      const data = await fetchProducts(page + 1, 5);
+  const [searchTitle, setSearchTitle] = useState('');
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '5', 10);
+
+  const getProducts = async (page: number, limit: number, searchTitle: string) => {
+    try {
+      const data = await fetchProducts(page, limit, searchTitle);
       if (data) {
         setProducts(data.products);
         setTotalPages(data.totalPages);
       }
-    };
-    getProducts();
-  }, [page]);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    getProducts(page, limit, searchTitle);
+  }, [page, limit, searchTitle]);
 
   const handleAddProduct = () => {
     navigate('/products/create');
@@ -38,18 +47,22 @@ const ProductsPage = () => {
 
   const handleDelete = async (id: number) => {
     await deleteProduct(id);
-    setProducts(products.filter(product => product.id !== id));
+    const newProducts = await fetchProducts(page, limit, searchTitle);
+    if (newProducts.products.length === 0 && page > 1) {
+      navigate(`/products?page=${page - 1}&limit=${limit}`, { replace: true });
+    } else {
+      setProducts(newProducts.products);
+      setTotalPages(newProducts.totalPages);
+    }
   };
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
-    setPage(newPage - 1);
+  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
+    navigate(`/products?page=${newPage}&limit=5`, { replace: true });
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTitle(e.target.value);
   };
-
-  const filteredProducts = products.filter(product => product.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div>
@@ -60,15 +73,21 @@ const ProductsPage = () => {
         </Button>
       </div>
       <Box mb={3}>
-        <TextField label='Search Products' variant='outlined' fullWidth value={search} onChange={handleSearchChange} />
+        <TextField
+          label='Search Products'
+          variant='outlined'
+          fullWidth
+          value={searchTitle}
+          onChange={handleSearchChange}
+        />
       </Box>
       {products && (
         <div>
-          <DataTable columns={columns} rows={filteredProducts} onDelete={handleDelete} />
+          <DataTable columns={columns} rows={products} onDelete={handleDelete} />
           <Pagination
             className='flex justify-center mt-10'
             count={totalPages}
-            page={page + 1}
+            page={page}
             onChange={handlePageChange}
           />
         </div>

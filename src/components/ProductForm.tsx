@@ -10,34 +10,42 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { TableRowData } from '../types';
 
 interface ProductFormProps {
   initialProduct?: Omit<TableRowData, 'id'>;
-  onSubmit: (formData: FormData) => void;
-}
-
-interface ProductFormInputs extends Omit<TableRowData, 'id'> {
+  onSubmit: SubmitHandler<Omit<TableRowData, 'id'> & { images: File[] }>;
   images: File[];
+  existingImages: string[];
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemoveImage: (index: number) => void;
+  handleRemoveExistingImage: (index: number) => void;
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) => {
+const ProductForm: React.FC<ProductFormProps> = ({
+  initialProduct,
+  onSubmit,
+  images,
+  existingImages,
+  handleImageChange,
+  handleRemoveImage,
+  handleRemoveExistingImage,
+}) => {
   const {
     control,
     handleSubmit,
     setValue,
     formState: { errors },
     register,
-  } = useForm<ProductFormInputs>();
-  const [images, setImages] = useState<File[]>([]);
-  const navigate = useNavigate();
+    trigger,
+  } = useForm<Omit<TableRowData, 'id'> & { images: File[] }>({
+    defaultValues: initialProduct,
+  });
 
   useEffect(() => {
     if (initialProduct) {
@@ -48,44 +56,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
     }
   }, [initialProduct, setValue]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const fileArray = Array.from(e.target.files);
-      setImages(prevImages => prevImages.concat(fileArray));
-      if (fileArray.length > 0) {
-        setValue('images', fileArray);
-      }
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
-    setValue('images', updatedImages.length > 0 ? updatedImages : []);
-  };
-
-  const handleFormSubmit = (data: ProductFormInputs) => {
-    if (images.length === 0) {
-      setValue('images', [], { shouldValidate: true });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('status', data.status);
-    if (data.price !== undefined) {
-      formData.append('price', data.price.toString());
-    }
-    images.forEach((file, index) => {
-      formData.append('images', file, `image-${index}`);
-    });
-
-    onSubmit(formData);
-  };
+  const navigate = useNavigate();
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Box mb={3}>
         <Controller
           name='title'
@@ -115,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
               onChange={field.onChange}
               onBlur={() => {
                 if (!field.value || field.value === '<p><br></p>') {
-                  toast.error('Description is required.');
+                  setValue('description', '', { shouldValidate: true });
                 }
               }}
             />
@@ -144,7 +118,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
           <input
             type='file'
             {...register('images', {
-              validate: () => images.length > 0 || 'Please upload at least one image.',
+              validate: () => images.length > 0 || existingImages.length > 0 || 'Please upload at least one image.',
             })}
             multiple
             onChange={handleImageChange}
@@ -159,6 +133,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
           <FormHelperText>{errors.images ? (errors.images.message as string) : ''}</FormHelperText>
         </FormControl>
         <Box display='flex' flexWrap='wrap' mt={2}>
+          {existingImages.map((image, index) => (
+            <Box key={index} position='relative' mr={2} mb={2}>
+              <img src={image} alt={`existing-preview-${index}`} width='100' height='100' />
+              <IconButton
+                onClick={() => handleRemoveExistingImage(index)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  background: 'rgba(255, 255, 255, 0.7)',
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))}
           {images.map((file, index) => (
             <Box key={index} position='relative' mr={2} mb={2}>
               <img src={URL.createObjectURL(file)} alt={`preview-${index}`} width='100' height='100' />
@@ -181,7 +171,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
         <Controller
           name='price'
           control={control}
-          defaultValue={undefined}
+          defaultValue={initialProduct?.price}
           rules={{ required: 'Price is required', min: { value: 0, message: 'Price must be a positive number' } }}
           render={({ field }) => (
             <TextField
@@ -190,6 +180,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
               variant='outlined'
               fullWidth
               type='number'
+              InputLabelProps={{
+                shrink: typeof field.value === 'number' || field.value !== '',
+              }}
               error={!!errors.price}
               helperText={errors.price ? errors.price.message : ''}
             />
@@ -200,7 +193,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
         <Button variant='outlined' onClick={() => navigate('/products')}>
           Cancel
         </Button>
-        <Button variant='contained' color='primary' type='submit'>
+        <Button variant='contained' color='primary' type='submit' onClick={() => trigger()}>
           Save
         </Button>
       </Box>
