@@ -1,5 +1,5 @@
 import { Box, Button, Pagination, TextField } from '@mui/material';
-import { useEffect, useState, lazy } from 'react';
+import { lazy, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { deleteProduct, fetchProducts } from '../api/products';
 import { TableColumn, TableRowData } from '../types';

@@ -1,30 +1,89 @@
-# React + TypeScript + Vite
+# React CRUD Приложение
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Это проект представляет собой простое одностраничное приложение (SPA), созданное с использованием React, которое взаимодействует с бэкэндом на Express.js. Оно демонстрирует базовые CRUD (Создание, Чтение, Обновление, Удаление) операции для управления товарами.
 
-Currently, two official plugins are available:
+## Технологический стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Typescript**
+- **React** + **React Router**
+- **Express.js**
+- **Material UI**
+- **Vite** для сборки и разработки
+- **Docker**
 
-## Expanding the ESLint configuration
+## Функционал
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **CRUD операции**: Создание, Чтение, Обновление и Удаление товаров.
+- **Поддержка HTML-описаний**: У товаров есть поле для описания, которое поддерживает форматирование HTML с помощью визуального редактора (WYSIWYG).
+- **Загрузка изображений**: Товары могут иметь несколько изображений, которые можно загружать и удалять.
+- **Пагинация**: Товары отображаются с пагинацией, по 5 штук на странице.
+- **Поиск**: Поиск товара по названию.
+- **Валидация**: Валидация на клиентской стороне для обязательных полей (название, цена, изображение).
 
-- Configure the top-level `parserOptions` property like this:
+## Страницы
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+### Товары (`/products`)
+
+- Отображает все товары в табличном формате.
+- Включает поле для поиска товаров по названию.
+- Пагинация для навигации по страницам товаров.
+- Кнопка для удаления отдельных товаров.
+- Кнопка для редактирования отдельных товаров.
+- Кнопка для перехода на страницу "Добавить товар".
+
+### Добавить товар (`/products/create`)
+
+- Инпут для названия товара (обязательное поле).
+- Текстовое поле для описания товара: визуальный редактор WYSIWYG.
+- Инпуты для загрузки изображений товара (можно прикрепить несколько и удалить).
+- Выпадающий список для выбора статуса товара: активный или архивный.
+- Кнопка "Сохранить", которая запускает валидацию и сохраняет изменения на сервер. Если все корректно, происходит возврат на страницу "Товары". В случае ошибок показываются уведомления на экране.
+- Кнопка "Отмена", которая просто возвращает на страницу "Товары".
+
+### Редактировать товар (`/products/edit/:id`)
+
+- Можно редактировать товар.
+
+## Запуск проекта
+
+### Установка зависимостей
+
+Установите все необходимые зависимости с помощью следующей команды:
+
+```bash
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Запуск в режиме разработки
+Для запуска проекта в режиме разработки используйте команду:
+
+```bash
+npm run dev
+```
+
+Сборка проекта
+Для сборки проекта используйте команду:
+
+```bash
+npm run build
+```
+
+## Запуск проекта без Docker Compose
+
+Если вы хотите запустить фронтенд и бэкенд отдельно без использования Docker Compose, выполните следующие шаги:
+
+### Запуск фронтенда вручную
+
+- Перейдите в папку фронтенда:
+  ```bash
+  cd react-crud
+  ```
+- Постройте Docker образ для фронтенда:
+  ```bash
+  docker build -t frontend-app .
+  ```
+- Запустите Docker контейнер для фронтенда:
+  ```bash
+  docker run -p 5173:5173 frontend-app
+  ```
+  Приложение будет доступно по адресу http://localhost:5173.
